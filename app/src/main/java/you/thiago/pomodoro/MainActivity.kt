@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
-            NotificationBuilder(this@MainActivity).send()
+            sendNotification()
         }
     }
 
@@ -55,5 +55,11 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun sendNotification() {
+        NotificationBuilder()
+            .build(this@MainActivity)
+            .send()
     }
 }

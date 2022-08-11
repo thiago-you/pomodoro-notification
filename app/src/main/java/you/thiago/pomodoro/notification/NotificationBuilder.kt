@@ -1,61 +1,37 @@
 package you.thiago.pomodoro.notification
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import you.thiago.pomodoro.R
-import java.lang.ref.WeakReference
 
-class NotificationBuilder (context: Context) {
+class NotificationBuilder {
+
+    private var title = ""
+    private var content = ""
 
     companion object {
         const val CHANNEL_ID = "00000000001"
-
-        private var notificationId = 0
-
-        private fun getNotificationId(): Int {
-            synchronized(this) {
-                return ++notificationId
-            }
-        }
     }
 
-    private val weakContext = WeakReference(context)
-
-    fun send() {
-        weakContext.get()?.also { context ->
-            val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Pomodoro")
-                .setContentText("Test")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-            createNotificationChannel()
-
-            with (NotificationManagerCompat.from(context)) {
-                // notificationId is a unique int for each notification that you must define
-                notify(getNotificationId(), builder.build())
-            }
-        }
+    fun setTitle(title: String): NotificationBuilder {
+        this.title = title
+        return this
     }
 
-    private fun createNotificationChannel() {
-        val name = "notification_channel"
-        val descriptionText = "notification_desc"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+    fun setContent(content: String): NotificationBuilder {
+        this.content = content
+        return this
+    }
 
-        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-            description = descriptionText
-        }
+    fun build(context: Context): Notification {
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        // Register the channel with the system
-        weakContext.get()?.also { context ->
-            (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).also {
-                it.createNotificationChannel(channel)
-            }
-        }
+        NotificationChannel().create(context)
+
+        return Notification(context, builder.build())
     }
 }
