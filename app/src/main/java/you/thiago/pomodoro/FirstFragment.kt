@@ -15,6 +15,9 @@ import you.thiago.pomodoro.databinding.FragmentFirstBinding
  */
 class FirstFragment : Fragment() {
 
+    private var defaultTimer = "30:00"
+    private var progress = 0
+
     private var countdownTimer: CountDownTimer? = null
     private var timeInMilliseconds = 60000L
     private var pauseOffSet = 0L
@@ -32,6 +35,12 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.tvTimer.text = defaultTimer
+
+        binding.progressBar.max = 100
+        binding.progressBar.progress = 100
+        binding.progressBar.isIndeterminate = false
 
         binding.btnConfig.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -58,11 +67,20 @@ class FirstFragment : Fragment() {
         resumeTimer()
     }
 
-    private fun starTimer(){
+    private fun starTimer() {
+        progress = 0
+
+        binding.progressBar.progress = 0
+        binding.progressBar.max = timeInMilliseconds.toInt()
+
         countdownTimer = object : CountDownTimer(timeInMilliseconds - 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 pauseOffSet = timeInMilliseconds - millisUntilFinished
-                binding.tvTimer.text= (millisUntilFinished/1000).toString()
+                binding.tvTimer.text = (millisUntilFinished / 1000).toString()
+
+                progress += 1000
+
+                binding.progressBar.progress = progress
             }
 
             override fun onFinish() {}
