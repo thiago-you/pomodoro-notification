@@ -1,14 +1,13 @@
 package you.thiago.pomodoro
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.CountDownTimer
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import you.thiago.pomodoro.databinding.FragmentHomeBinding
+import you.thiago.pomodoro.timer.Timer
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -16,11 +15,8 @@ import you.thiago.pomodoro.databinding.FragmentHomeBinding
 class HomeFragment : Fragment() {
 
     private var defaultTimer = "30:00"
-    private var progress = 0
 
-    private var countdownTimer: CountDownTimer? = null
-    private var timeInMilliseconds = 60000L
-    private var pauseOffSet = 0L
+    private var timer: Timer? = null
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -59,49 +55,25 @@ class HomeFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        pauseTimer()
+        timer?.pauseTimer()
     }
 
     override fun onResume() {
         super.onResume()
-        resumeTimer()
+        timer?.resumeTimer()
     }
 
     private fun starTimer() {
-        progress = 0
+        timer = Timer()
 
-        binding.progressBar.progress = 0
-        binding.progressBar.max = timeInMilliseconds.toInt()
+        timer?.also { timer ->
+            binding.progressBar.progress = 0
+            binding.progressBar.max = timer.timeInMilliseconds.toInt()
 
-        countdownTimer = object : CountDownTimer(timeInMilliseconds - 1000L, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                pauseOffSet = timeInMilliseconds - millisUntilFinished
-                binding.tvTimer.text = (millisUntilFinished / 1000).toString()
-
-                progress += 1000
-
-                binding.progressBar.progress = progress
+            timer.startTimer { time ->
+                binding.tvTimer.text = time
+                binding.progressBar.progress = timer.progress
             }
-
-            override fun onFinish() {}
-        }.start()
-    }
-
-    private fun resumeTimer() {
-        countdownTimer?.start()
-    }
-
-    private fun pauseTimer() {
-        countdownTimer?.cancel()
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun resetTimer() {
-        countdownTimer?.cancel()
-
-        binding.tvTimer.text = (timeInMilliseconds/1000).toString()
-
-        countdownTimer = null
-        pauseOffSet = 0
+        }
     }
 }
