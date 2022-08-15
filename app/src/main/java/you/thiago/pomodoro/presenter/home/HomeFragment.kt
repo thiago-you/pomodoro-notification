@@ -5,25 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import you.thiago.pomodoro.R
 import you.thiago.pomodoro.databinding.FragmentHomeBinding
-import you.thiago.pomodoro.timer.Timer
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class HomeFragment : Fragment() {
 
-    private var defaultTimer = "30:00"
-
-    private var timer: Timer? = null
-
     private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -33,19 +32,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvTimer.text = defaultTimer
-
-        binding.progressBar.max = 100
-        binding.progressBar.progress = 100
-        binding.progressBar.isIndeterminate = false
-
-        binding.btnConfig.setOnClickListener {
-            findNavController().navigate(R.id.action_HomeFragment_to_ConfigFragment)
-        }
-
-        binding.btnStartTimer.setOnClickListener {
-            starTimer()
-        }
+        setupInterface()
+        setupListeners()
     }
 
     override fun onDestroyView() {
@@ -56,24 +44,46 @@ class HomeFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        timer?.pauseTimer()
+        viewModel.pauseTimer()
     }
 
     override fun onResume() {
         super.onResume()
-        timer?.resumeTimer()
+        viewModel.resumeTimer()
     }
 
-    private fun starTimer() {
-        timer = Timer()
+    private fun setupInterface() {
+        binding.tvTimer.text = viewModel.defaultTimer
 
-        timer?.also { timer ->
-            binding.progressBar.progress = 0
-            binding.progressBar.max = timer.timeInMilliseconds.toInt()
+        binding.progressBar.max = 100
+        binding.progressBar.progress = 100
+        binding.progressBar.isIndeterminate = false
 
-            timer.startTimer { time ->
-                binding.tvTimer.text = time
-                binding.progressBar.progress = timer.progress
+        binding.btnConfig.setOnClickListener {
+            findNavController().navigate(R.id.action_HomeFragment_to_ConfigFragment)
+        }
+
+        binding.btnStartTimer.setOnClickListener {
+            viewModel.starTimer()
+        }
+    }
+
+    private fun setupListeners() {
+        lifecycleScope.launchWhenResumed {
+            viewModel.timerMaxProgress.collect { value ->
+                binding.progressBar.max = value
+            }
+        }
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.timerProgress.collect { value ->
+                binding.progressBar.progress = value
+            }
+        }
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.timerTime.collect { value ->
+                binding.tvTimer.text = value
             }
         }
     }

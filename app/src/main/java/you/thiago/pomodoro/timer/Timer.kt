@@ -1,6 +1,5 @@
 package you.thiago.pomodoro.timer
 
-import android.annotation.SuppressLint
 import android.os.CountDownTimer
 
 class Timer {
@@ -34,7 +33,6 @@ class Timer {
         countdownTimer?.cancel()
     }
 
-    @SuppressLint("SetTextI18n")
     fun resetTimer() {
         countdownTimer?.cancel()
 
