@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/HomeFragment"
-        android:name="you.thiago.pomodoro.HomeFragment"
+        android:name="you.thiago.pomodoro.presenter.home.HomeFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_home">
 
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/ConfigFragment"
-        android:name="you.thiago.pomodoro.ConfigFragment"
+        android:name="you.thiago.pomodoro.presenter.config.ConfigFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_config">
 

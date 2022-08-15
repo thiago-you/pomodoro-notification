@@ -1,4 +1,4 @@
-package you.thiago.pomodoro
+package you.thiago.pomodoro.presenter.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import you.thiago.pomodoro.R
 import you.thiago.pomodoro.databinding.FragmentHomeBinding
 import you.thiago.pomodoro.timer.Timer
 
