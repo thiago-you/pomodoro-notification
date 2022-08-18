@@ -20,6 +20,17 @@ class HomeViewModel : ViewModel() {
     private var _timerTime = MutableStateFlow(defaultTimer)
     val timerTime: StateFlow<String> = _timerTime
 
+    private var _startAnimation = MutableStateFlow(true)
+    val startAnimation: StateFlow<Boolean> = _startAnimation
+
+    init {
+        setStartAnimation(true)
+    }
+
+    fun setStartAnimation(animation: Boolean) {
+        _startAnimation.value = animation
+    }
+
     fun starTimer() {
         timer?.resetTimer()
         _timerProgress.value = 0

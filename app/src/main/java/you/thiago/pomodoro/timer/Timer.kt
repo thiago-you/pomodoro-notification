@@ -6,27 +6,28 @@ class Timer {
 
     var progress = 0
     var interval = 1000L
-    var timeInMilliseconds = 60000L
+    var timeInMilliseconds = 10000L
 
     private var countdownTimer: CountDownTimer? = null
     private var pauseOffSet = 0L
 
+    private var futureTime = 0L
+    private var startedTime = 0L
+    private var progressAction: (time: String) -> Unit = {}
+
     fun startTimer(action: (time: String) -> Unit) {
         progress = 0
 
-        countdownTimer = object : CountDownTimer(timeInMilliseconds - interval, interval) {
-            override fun onTick(millisUntilFinished: Long) {
-                pauseOffSet = timeInMilliseconds - millisUntilFinished
-                progress += interval.toInt()
-                action((millisUntilFinished / 1000).toString())
-            }
+        startedTime = System.currentTimeMillis()
+        progressAction = action
 
-            override fun onFinish() {}
-        }.start()
+        futureTime = startedTime + timeInMilliseconds
+
+        setupCountdown()
     }
 
     fun resumeTimer() {
-        countdownTimer?.start()
+        setupCountdown()
     }
 
     fun pauseTimer() {
@@ -38,5 +39,26 @@ class Timer {
 
         countdownTimer = null
         pauseOffSet = 0
+    }
+
+    private fun setupCountdown() {
+        val currentTime = System.currentTimeMillis()
+
+        if (currentTime >= futureTime) {
+            progress = 100
+            progressAction("0:00")
+            return
+        }
+
+        countdownTimer = object : CountDownTimer(futureTime - currentTime, interval) {
+            override fun onTick(millisUntilFinished: Long) {
+                pauseOffSet = timeInMilliseconds - millisUntilFinished
+                progress += interval.toInt()
+
+                progressAction((millisUntilFinished / 1000).toString())
+            }
+
+            override fun onFinish() {}
+        }.start()
     }
 }

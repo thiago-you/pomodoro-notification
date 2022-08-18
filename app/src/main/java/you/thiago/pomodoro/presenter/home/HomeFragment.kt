@@ -57,10 +57,8 @@ class HomeFragment : Fragment() {
         binding.tvTimer.text = viewModel.defaultTimer
 
         binding.progressBar.max = 100
-        binding.progressBar.progress = 0
+        binding.progressBar.progress = viewModel.timerProgress.value
         binding.progressBar.isIndeterminate = false
-
-        startingAnimation()
 
         binding.btnConfig.setOnClickListener {
             findNavController().navigate(R.id.action_HomeFragment_to_ConfigFragment)
@@ -87,6 +85,15 @@ class HomeFragment : Fragment() {
         lifecycleScope.launchWhenResumed {
             viewModel.timerTime.collect { value ->
                 binding.tvTimer.text = value
+            }
+        }
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.startAnimation.collect { animation ->
+                if (animation) {
+                    viewModel.setStartAnimation(false)
+                    startingAnimation()
+                }
             }
         }
     }
