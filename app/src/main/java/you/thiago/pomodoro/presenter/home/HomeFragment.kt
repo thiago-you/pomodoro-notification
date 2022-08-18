@@ -1,5 +1,6 @@
 package you.thiago.pomodoro.presenter.home
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -56,8 +57,10 @@ class HomeFragment : Fragment() {
         binding.tvTimer.text = viewModel.defaultTimer
 
         binding.progressBar.max = 100
-        binding.progressBar.progress = 100
+        binding.progressBar.progress = 0
         binding.progressBar.isIndeterminate = false
+
+        startingAnimation()
 
         binding.btnConfig.setOnClickListener {
             findNavController().navigate(R.id.action_HomeFragment_to_ConfigFragment)
@@ -86,5 +89,11 @@ class HomeFragment : Fragment() {
                 binding.tvTimer.text = value
             }
         }
+    }
+
+    private fun startingAnimation() {
+        ObjectAnimator.ofInt(binding.progressBar, "progress", 100)
+            .setDuration(1500)
+            .start()
     }
 }
