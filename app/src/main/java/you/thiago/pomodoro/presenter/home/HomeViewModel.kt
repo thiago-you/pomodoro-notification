@@ -38,7 +38,7 @@ class HomeViewModel : ViewModel() {
         timer = Timer()
 
         timer?.also { timer ->
-            _timerMaxProgress.value = timer.timeInMilliseconds.toInt()
+            _timerMaxProgress.value = timer.getMaxProgress()
 
             timer.startTimer { time ->
                 _timerProgress.value = timer.progress

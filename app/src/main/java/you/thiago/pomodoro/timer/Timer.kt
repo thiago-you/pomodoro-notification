@@ -15,12 +15,12 @@ class Timer {
     private var startedTime = 0L
     private var progressAction: (time: String) -> Unit = {}
 
+    private val padTime = 1000L
+
     fun startTimer(action: (time: String) -> Unit) {
         progress = 0
-
-        startedTime = System.currentTimeMillis()
         progressAction = action
-
+        startedTime = System.currentTimeMillis() + padTime
         futureTime = startedTime + timeInMilliseconds
 
         setupCountdown()
@@ -41,24 +41,38 @@ class Timer {
         pauseOffSet = 0
     }
 
+    fun getMaxProgress(): Int {
+        return (timeInMilliseconds / 1000).toInt()
+    }
+
     private fun setupCountdown() {
         val currentTime = System.currentTimeMillis()
 
         if (currentTime >= futureTime) {
-            progress = 100
-            progressAction("0:00")
+            setFinishedTimer()
             return
         }
 
         countdownTimer = object : CountDownTimer(futureTime - currentTime, interval) {
             override fun onTick(millisUntilFinished: Long) {
-                pauseOffSet = timeInMilliseconds - millisUntilFinished
-                progress += interval.toInt()
+                if (millisUntilFinished < 1000) {
+                    setFinishedTimer()
+                } else {
+                    pauseOffSet = timeInMilliseconds - millisUntilFinished
+                    progress += interval.toInt() / 1000
 
-                progressAction((millisUntilFinished / 1000).toString())
+                    progressAction((millisUntilFinished / 1000).toString())
+                }
             }
 
-            override fun onFinish() {}
+            override fun onFinish() {
+                setFinishedTimer()
+            }
         }.start()
+    }
+
+    private fun setFinishedTimer() {
+        progress = 100
+        progressAction("0:00")
     }
 }
