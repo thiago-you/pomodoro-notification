@@ -31,7 +31,7 @@
         tools:text="30:00" />
 
     <Button
-        android:id="@+id/btn_start_timer"
+        android:id="@+id/btn_toggle_timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="32dp"
@@ -47,15 +47,31 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="250dp"
         android:layout_height="250dp"
+        android:background="@drawable/circle_shape"
         android:indeterminate="false"
+        android:max="100"
         android:progress="30"
         android:progressDrawable="@drawable/circular_progress_bar"
-        android:background="@drawable/circle_shape"
-        android:max="100"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.370"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.370" />
+
+    <Button
+        android:id="@+id/btn_reset_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="@string/reset"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

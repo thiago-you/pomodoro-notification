@@ -15,22 +15,30 @@ class Timer {
     private var startedTime = 0L
     private var progressAction: (time: String) -> Unit = {}
 
-    private val padTime = 1000L
+    private var status = TimerStatus.PAUSED
+
+    fun isResumed(): Boolean {
+        return status == TimerStatus.RESUMED
+    }
 
     fun startTimer(action: (time: String) -> Unit) {
+        status = TimerStatus.RESUMED
+
         progress = 0
         progressAction = action
-        startedTime = System.currentTimeMillis() + padTime
+        startedTime = System.currentTimeMillis()
         futureTime = startedTime + timeInMilliseconds
 
         setupCountdown()
     }
 
     fun resumeTimer() {
+        status = TimerStatus.RESUMED
         setupCountdown()
     }
 
     fun pauseTimer() {
+        status = TimerStatus.PAUSED
         countdownTimer?.cancel()
     }
 
@@ -39,6 +47,8 @@ class Timer {
 
         countdownTimer = null
         pauseOffSet = 0
+
+        status = TimerStatus.PAUSED
     }
 
     fun getMaxProgress(): Int {
@@ -58,10 +68,9 @@ class Timer {
                 if (millisUntilFinished < 1000) {
                     setFinishedTimer()
                 } else {
-                    pauseOffSet = timeInMilliseconds - millisUntilFinished
                     progress += interval.toInt() / 1000
-
-                    progressAction((millisUntilFinished / 1000).toString())
+                    pauseOffSet = timeInMilliseconds - millisUntilFinished
+                    progressAction(formatTime(millisUntilFinished / 1000))
                 }
             }
 
@@ -74,5 +83,23 @@ class Timer {
     private fun setFinishedTimer() {
         progress = 100
         progressAction("0:00")
+    }
+
+    private fun formatTime(time: Long): String {
+        var minutes = 0L
+        var seconds = time
+
+        if (seconds > 3600) {
+            minutes = (seconds / 3600 * 60  + ((seconds % 3600) / 60))
+        }
+
+        seconds %= 60
+
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    private enum class TimerStatus {
+        RESUMED,
+        PAUSED
     }
 }

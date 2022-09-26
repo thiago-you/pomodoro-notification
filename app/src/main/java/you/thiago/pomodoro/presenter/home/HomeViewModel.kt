@@ -23,19 +23,42 @@ class HomeViewModel : ViewModel() {
     private var _startAnimation = MutableStateFlow(true)
     val startAnimation: StateFlow<Boolean> = _startAnimation
 
+    private var _btnLabelStatus = MutableStateFlow(ButtonStatus.BTN_START)
+    val btnLabelStatus: StateFlow<ButtonStatus> = _btnLabelStatus
+
     init {
         setStartAnimation(true)
+    }
+
+    fun isTimerRunning(): Boolean {
+        return timer != null && timer?.isResumed() == true
     }
 
     fun setStartAnimation(animation: Boolean) {
         _startAnimation.value = animation
     }
 
-    fun starTimer() {
+    fun toggleTimer() {
+        if (timer == null) {
+            starTimer()
+        } else {
+            if (timer?.isResumed() == true) {
+                _btnLabelStatus.value = ButtonStatus.BTN_START
+                pauseTimer()
+            } else {
+                _btnLabelStatus.value = ButtonStatus.BTN_STOP
+                resumeTimer()
+            }
+        }
+    }
+
+    private fun starTimer() {
         timer?.resetTimer()
         _timerProgress.value = 0
 
         timer = Timer()
+
+        _btnLabelStatus.value = ButtonStatus.BTN_STOP
 
         timer?.also { timer ->
             _timerMaxProgress.value = timer.getMaxProgress()
@@ -43,8 +66,22 @@ class HomeViewModel : ViewModel() {
             timer.startTimer { time ->
                 _timerProgress.value = timer.progress
                 _timerTime.value = time
+
+                if (timer.progress >= 100) {
+                    resetTimer()
+                }
             }
         }
+    }
+
+    fun resetTimer() {
+        timer?.resetTimer()
+        _timerProgress.value = 100
+        _timerTime.value = defaultTimer
+
+        timer = null
+
+        _btnLabelStatus.value = ButtonStatus.BTN_START
     }
 
     fun pauseTimer() {
@@ -53,5 +90,10 @@ class HomeViewModel : ViewModel() {
 
     fun resumeTimer() {
         timer?.resumeTimer()
+    }
+
+    enum class ButtonStatus {
+        BTN_START,
+        BTN_STOP
     }
 }

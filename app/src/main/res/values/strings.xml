@@ -7,6 +7,8 @@
 
     <string name="next">Next</string>
     <string name="start">Start</string>
+    <string name="reset">Reset</string>
+    <string name="stop">Stop</string>
     <string name="config">Config</string>
     <string name="previous">Previous</string>
 

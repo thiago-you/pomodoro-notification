@@ -3,7 +3,6 @@ package you.thiago.pomodoro.presenter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import you.thiago.pomodoro.databinding.ActivityMainBinding
-import you.thiago.pomodoro.notification.NotificationBuilder
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,15 +13,5 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        binding.fab.setOnClickListener {
-            sendNotification()
-        }
-    }
-
-    private fun sendNotification() {
-        NotificationBuilder()
-            .build(this@MainActivity)
-            .send()
     }
 }

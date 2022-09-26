@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import you.thiago.pomodoro.R
 import you.thiago.pomodoro.databinding.FragmentHomeBinding
+import you.thiago.pomodoro.presenter.home.HomeViewModel.ButtonStatus.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -64,8 +66,13 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_HomeFragment_to_ConfigFragment)
         }
 
-        binding.btnStartTimer.setOnClickListener {
-            viewModel.starTimer()
+        binding.btnToggleTimer.setOnClickListener {
+            viewModel.toggleTimer()
+        }
+
+        binding.btnResetTimer.setOnClickListener {
+            viewModel.resetTimer()
+            binding.btnResetTimer.isVisible = false
         }
     }
 
@@ -93,6 +100,24 @@ class HomeFragment : Fragment() {
                 if (animation) {
                     viewModel.setStartAnimation(false)
                     startingAnimation()
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.btnLabelStatus.collect { status ->
+                when (status) {
+                    BTN_START -> {
+                        binding.btnToggleTimer.setText(R.string.start)
+
+                        if (viewModel.isTimerRunning()) {
+                            binding.btnResetTimer.isVisible = true
+                        }
+                    }
+                    BTN_STOP -> {
+                        binding.btnToggleTimer.setText(R.string.stop)
+                        binding.btnResetTimer.isVisible = false
+                    }
                 }
             }
         }
