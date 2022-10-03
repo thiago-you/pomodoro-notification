@@ -33,11 +33,16 @@ class Timer {
     }
 
     fun resumeTimer() {
+        startedTime = System.currentTimeMillis()
+        futureTime += startedTime
+
         status = TimerStatus.RESUMED
         setupCountdown()
     }
 
     fun pauseTimer() {
+        futureTime -= System.currentTimeMillis() + interval
+
         status = TimerStatus.PAUSED
         countdownTimer?.cancel()
     }

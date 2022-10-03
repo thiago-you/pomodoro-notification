@@ -1,8 +1,11 @@
 package you.thiago.pomodoro.presenter.home
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import you.thiago.pomodoro.notification.NotificationBuilder
 import you.thiago.pomodoro.timer.Timer
 
 class HomeViewModel : ViewModel() {
@@ -25,6 +28,9 @@ class HomeViewModel : ViewModel() {
 
     private var _btnLabelStatus = MutableStateFlow(ButtonStatus.BTN_START)
     val btnLabelStatus: StateFlow<ButtonStatus> = _btnLabelStatus
+
+    private var _sendNotification = MutableStateFlow(true)
+    val sendNotification: StateFlow<Boolean> = _sendNotification
 
     init {
         setStartAnimation(true)
@@ -69,6 +75,7 @@ class HomeViewModel : ViewModel() {
 
                 if (timer.progress >= 100) {
                     resetTimer()
+                    _sendNotification.value = true
                 }
             }
         }
@@ -90,6 +97,16 @@ class HomeViewModel : ViewModel() {
 
     fun resumeTimer() {
         timer?.resumeTimer()
+    }
+
+    fun sendNotification(context: Context) {
+        _sendNotification.value = false
+
+        NotificationBuilder()
+            .build(context)
+            .send()
+
+        Log.e("TESTE", "enviado...")
     }
 
     enum class ButtonStatus {

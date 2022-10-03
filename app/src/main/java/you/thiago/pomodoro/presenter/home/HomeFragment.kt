@@ -2,6 +2,7 @@ package you.thiago.pomodoro.presenter.home
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import you.thiago.pomodoro.R
 import you.thiago.pomodoro.databinding.FragmentHomeBinding
-import you.thiago.pomodoro.presenter.home.HomeViewModel.ButtonStatus.*
+import you.thiago.pomodoro.presenter.home.HomeViewModel.ButtonStatus.BTN_START
+import you.thiago.pomodoro.presenter.home.HomeViewModel.ButtonStatus.BTN_STOP
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -119,6 +122,16 @@ class HomeFragment : Fragment() {
                         binding.btnResetTimer.isVisible = false
                     }
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.sendNotification.collect { send ->
+                if (send) {
+                    Log.e("TESTE", "coletado...")
+
+                    viewModel.sendNotification(requireContext())
+                 }
             }
         }
     }
